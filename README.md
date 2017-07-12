@@ -11,6 +11,7 @@ cordova plugin add https://github.com/danicomas/Cordova-PDFReader-IOS.git
 Documentation
 -------------
 
+```js
 var options = {                  
 	bookmarks: false,
 	enableShare: true,
@@ -33,6 +34,7 @@ var PDFReaderButtonOK = function() { //fired after click on OK Button
 	document.removeEventListener('PDFReaderButtonOK', PDFReaderButtonOK);
 };
 document.addEventListener('PDFReaderButtonOK', PDFReaderButtonOK);
+```
 
     
 	
