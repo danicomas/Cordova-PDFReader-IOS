@@ -721,6 +721,11 @@
 					if ((mainToolbar.alpha < 1.0f) || (mainPagebar.alpha < 1.0f)) // Hidden
 					{
 						[mainToolbar showToolbar]; [mainPagebar showPagebar]; // Show
+                        
+                        if ([delegate respondsToSelector:@selector(toolbarShown:)] == YES)
+                        {
+                            [delegate toolbarShown:self];
+                        }
 					}
 				}
 			}
@@ -818,6 +823,12 @@
 		[mainToolbar hideToolbar]; [mainPagebar hidePagebar]; // Hide
 
 		lastHideTime = [NSDate date]; // Set last hide time
+        
+        if ([delegate respondsToSelector:@selector(toolbarHidden:)] == YES)
+        {
+            [delegate toolbarHidden:self];
+        }
+        
 	}
 }
 

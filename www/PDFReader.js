@@ -38,7 +38,10 @@ var PDFReader = (function () {
         switch (eventName) {
             case "closed":
                 cordova.fireDocumentEvent('PDFReaderClosed');
-            break;
+                break;
+            case "buttonokpressed":
+                cordova.fireDocumentEvent('PDFReaderButtonOK');
+                break;
         }
     }, function() {
 
@@ -111,7 +114,10 @@ PDFReader.prototype.open = function (filePath, options, success, error) {
         toolbarBackgroundColor: null,
         textColor: null,
         enableShare: false,
-        page: 1
+        page: 1,
+        showButtons: 0, //0: no buttons; 1: ok button, 2: ok and cancel button
+        cancel: "Cancel",
+        ok: "OK"
     };
 
     Object.keys(options).forEach(function (key) {
@@ -132,7 +138,10 @@ PDFReader.prototype.open = function (filePath, options, success, error) {
         defaultOptions['toolbarBackgroundColor'],
         defaultOptions['textColor'],
         defaultOptions['enableShare'],
-        defaultOptions['page']
+        defaultOptions['page'],
+        defaultOptions['showButtons'],
+        defaultOptions['cancel'],
+        defaultOptions['ok']
     ];
     exec('open', args, setupOk, setupFailed);
 };

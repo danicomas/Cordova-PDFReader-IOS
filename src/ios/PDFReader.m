@@ -7,6 +7,8 @@
 @implementation PDFReader
 @synthesize readerViewController;
 @synthesize callbackId;
+@synthesize buttonOK;
+@synthesize buttonCancel;
 
 + (UIColor *)colorFromHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
@@ -36,6 +38,9 @@
     NSString* textColor = [command.arguments objectAtIndex:11];
     BOOL enableShare = [[command.arguments objectAtIndex:12]  isEqual: [NSNumber numberWithInt:1]];
     NSInteger pageNumber = [[command.arguments objectAtIndex:13] intValue];
+    NSInteger showButtons = [[command.arguments objectAtIndex:14] intValue];
+    NSString* cancel = [command.arguments objectAtIndex:15];
+    NSString* ok = [command.arguments objectAtIndex:16];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -66,6 +71,7 @@
         readerColors.textColor = [PDFReader colorFromHexString:textColor];
     }
     
+    
     [self.commandDelegate runInBackground:^{
         CDVPluginResult *pluginResult;
         if ([fileManager fileExistsAtPath:filePath]){
@@ -73,10 +79,47 @@
             if (document != nil) // Must have a valid ReaderDocument object in order to proceed with things
             {
                 self.readerViewController = [[ReaderViewController alloc] initWithReaderDocument:document];
-                
                 self.readerViewController.delegate = self; // Set the ReaderViewController delegate to self
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.viewController presentViewController:readerViewController animated:YES completion:nil];
+                    
+                    if(showButtons == 1 || showButtons == 2) {
+                        
+                        double buttonOKPosition = 0.f;
+                        double width = self.readerViewController.view.bounds.size.width;
+                        if(showButtons == 2) {
+                            width = width / 2;
+                            buttonOKPosition = width;
+                        }
+
+                        //buttonOK
+                        buttonOK = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                        buttonOK.frame = CGRectMake(buttonOKPosition, self.readerViewController.view.bounds.size.height - 100, width, 50.f);
+                        [buttonOK setTitle:ok
+                                  forState:(UIControlState)UIControlStateNormal];
+                        [buttonOK setBackgroundColor: [UIColor blackColor]];
+                        [buttonOK setTitleColor:[UIColor whiteColor] forState:(UIControlState)UIControlStateNormal];
+                        [buttonOK addTarget:self
+                                     action:@selector(okButtonClick)
+                           forControlEvents:(UIControlEvents)UIControlEventTouchDown];
+                        self.readerViewController.view.userInteractionEnabled = YES;
+                        [self.readerViewController.view addSubview:buttonOK];
+                        
+                        if(showButtons == 2) {
+                            //buttonCancel
+                            buttonCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                            buttonCancel.frame = CGRectMake(0.f, self.readerViewController.view.bounds.size.height - 100, width, 50.f);
+                            [buttonCancel setTitle:cancel
+                                          forState:(UIControlState)UIControlStateNormal];
+                            [buttonCancel setBackgroundColor: [UIColor blackColor]];
+                            [buttonCancel setTitleColor:[UIColor whiteColor] forState:(UIControlState)UIControlStateNormal];
+                            [buttonCancel addTarget:self
+                                             action:@selector(cancelButtonClick)
+                                   forControlEvents:(UIControlEvents)UIControlEventTouchDown];
+                            self.readerViewController.view.userInteractionEnabled = YES;
+                            [self.readerViewController.view addSubview:buttonCancel];
+                        }
+                    }
                 });
             }
             else // Log an error so that we know that something went wrong
@@ -88,6 +131,24 @@
         }
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
+}
+
+-(void) okButtonClick
+{
+    if (self.callbackId) {
+        CDVPluginResult* pluginResult = nil;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"buttonokpressed"];
+        [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    }
+    [self.readerViewController dismissViewControllerAnimated:YES completion:nil];
+    self.readerViewController.delegate = nil;
+    self.readerViewController = nil;
+}
+
+-(void) cancelButtonClick
+{
+    [self closePDFReader];
 }
 
 -(void) closePDFReader
@@ -110,7 +171,26 @@
     [self closePDFReader];
 }
 
+- (void) toolbarHidden:(ReaderViewController *)viewController
+{
+    if(buttonOK) {
+        buttonOK.hidden = YES;
+    }
+    
+    if(buttonCancel) {
+        buttonCancel.hidden = YES;
+    }
+}
 
+- (void) toolbarShown:(ReaderViewController *)viewController
+{
+    if(buttonOK) {
+        buttonOK.hidden = NO;
+    }
+    if(buttonCancel) {
+        buttonCancel.hidden = NO;
+    }
+}
 
 //#pragma mark Delegate methods
 

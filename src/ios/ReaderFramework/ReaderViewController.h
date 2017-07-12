@@ -36,6 +36,8 @@
 @optional // Delegate protocols
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController;
+- (void)toolbarHidden:(ReaderViewController *)viewController;
+- (void)toolbarShown:(ReaderViewController *)viewController;
 
 @end
 
