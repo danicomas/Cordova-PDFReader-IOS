@@ -1,0 +1,30 @@
+{
+  "name": "com.lesfrancschatons.cordova.plugins.pdfreader",
+  "version": "1.0.0",
+  "description": "Cordova PDF reader for IOS (based on Reader http://www.vfr.org/)",
+  "cordova": {
+    "id": "com.lesfrancschatons.cordova.plugins.pdfreader",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/etabard/Cordova-PDFReader-IOS.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/etabard/Cordova-PDFReader-IOS/issues"
+  },
+  "homepage": "https://github.com/etabard/Cordova-PDFReader-IOS#readme"
+}
